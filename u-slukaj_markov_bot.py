@@ -8,7 +8,7 @@
 # prompted to by /u/slukaj      #
 #################################   
 # USR: /u/slukaj_markovbot      #
-# PSW: 6UysNPWt                 #
+# PSW:                          #
 #################################
 
 import praw, time, sys
@@ -20,7 +20,7 @@ def reddit_login():
     user_agent = "Markov Chain Generator that monitors /u/slukaj | V0.1"
     r = praw.Reddit(user_agent=user_agent)
 
-    r.login(username="slukaj_markovbot",password="6UysNPWt")
+    r.login(username="slukaj_markovbot",password="")
     print("Login sucessful")
 
     already_done = [] # list of all posts handled by /u/slukaj_markovbot
