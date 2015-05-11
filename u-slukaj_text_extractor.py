@@ -30,30 +30,12 @@ print("Getting comments...")
 comment_limit = 1000
 comments = slukaj.get_comments(limit=comment_limit)
 comment_list = []
+master_string = ""
 for thing in comments:
     comment_string = str(thing.body)
     comment_list.append(comment_string.lower())
+    master_string += comment_string.lower()
 
-print("Generating dictionary...")
-markov_dictionary = {}
-for comment in comment_list:
-    split_comment = comment.split()
-    if(len(split_comment)>=3):
-        for i in range(0,len(split_comment)-1):
-            if(i!=len(split_comment)-2):
-                keytuple = split_comment[i]+" "+split_comment[i+1]+" "+split_comment[i+2]
-                if keytuple in markov_dictionary:
-                    markov_dictionary[keytuple] += 1
-                else:
-                    markov_dictionary[keytuple] = 1
-
-print("Done. Dictionary ready!")
-print("-----------------------")
-print("Size of dictionary: "+str(len(markov_dictionary)))
-print("Writing dictionary file")
-
-f = open("dictionary.txt",'w')
-for entry in markov_dictionary:
-    f.write(entry+" "+str(markov_dictionary[entry])+"\n")
-f.close()
-print("File written")
+file = open("dictionary.txt","w")
+file.write(master_string)
+file.close()
