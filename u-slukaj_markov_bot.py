@@ -8,17 +8,19 @@
 # prompted to by /u/slukaj      #
 #################################   
 # USR: /u/slukaj_markovbot      #
-# PSW: 6UysNPWt                         #
+# PSW:                          #
 #################################
 
 import praw, time, sys
 from collections import Counter
 from operator import itemgetter
-from random import choice
+from random import choice 
+#from random import choice
 
 user_agent = "Markov Chain Generator that monitors /u/slukaj | V0.2"
 r = praw.Reddit(user_agent=user_agent)
-slukaj = r.get_redditor("slukaj")
+slukaj = r.get_redditor("slukaj") 
+dictionary = {}
 
 already_done = [] # list of all posts handled by /u/slukaj_markovbot
 
@@ -46,23 +48,23 @@ def already_replied(thing):
 def reply_to_comment(thing):
     print("Replying to comment!")
     already_done.append(thing.id)
-    thing.reply("I don't know!")
+    print(generate_gibberish(40))
+    #thing.reply(generate_gibberish(40))
 
 def build_dictionary(wordlist):
-    d = {}
     for i, word in enumerate(wordlist):
         try:
             first, second, third = wordlist[i],wordlist[i+1],wordlist[i+2]
         except IndexError:
             break #Ignores the last two words
         key = (first,second)
-        if key not in d:
-            d[key] = []
-        d[key].append(third)
-    return d
+        if key not in dictionary:
+            dictionary[key] = []
+        dictionary[key].append(third)
 
-def generate_gibberish(dictionary,length):
-    key = ("it","was")
+def generate_gibberish(length):
+    key = choice(list(dictionary.keys()))
+    #key = ("it","was")
     li = []
     first, second = key
     li.append(first)
@@ -77,19 +79,29 @@ def generate_gibberish(dictionary,length):
         li.append(third)
         key = (second, third)
         first, second = key
-    return ' '.join(li)
+    sentence = ' '.join(li)
+    sentence = sentence[0:].capitalize() + sentence[:0] + "..."
+    return sentence
 
-def main():
-    reddit_login()
-    check_comments()
+def read_data():
     file = open("dictionary.txt","r")
     rawstring = file.read()
     file.close()
     wordlist = rawstring.split()
-    dictionary = build_dictionary(wordlist)
-    gibberish = generate_gibberish(dictionary,35)
-    print(gibberish)
+    build_dictionary(wordlist)
+
+def logic_loop():
+    while True:
+        print("Tick...")
+        check_comments()
+        #gibberish = generate_gibberish(40)
+        #print(gibberish)
+        time.sleep(5)
+
+def main():
+    reddit_login()
+    read_data()
+    logic_loop()
         
 if __name__ == "__main__":
     main()
-
