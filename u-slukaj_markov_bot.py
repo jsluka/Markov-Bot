@@ -17,7 +17,7 @@ from operator import itemgetter
 from random import choice 
 #from random import choice
 
-user_agent = "Markov Chain Generator that monitors /u/slukaj | V0.2"
+user_agent = "Markov Chain Generator that monitors /u/slukaj | V0.9"
 r = praw.Reddit(user_agent=user_agent)
 slukaj = r.get_redditor("slukaj") 
 dictionary = {}
