@@ -29,27 +29,28 @@ def reddit_login():
     print("Login sucessful")
 
 def check_comments():
-    comments = slukaj.get_comments(sort='new',time='all',limit=5)
+    comments = slukaj.get_comments(sort='new',time='all',limit=25)
     for thing in comments:
         if "/u/slukaj_markovbot" in str(thing.body):
-            print("Found a comment!")
             if not already_replied(thing):
                 reply_to_comment(thing)
     print("Checked comments...") 
 
 def already_replied(thing):
-    if thing.id in already_done:
-        print("Already done.")
+    if str(thing.id) in already_done:
         return True
     else:
-        print("Not yet done!")
         return False
 
 def reply_to_comment(thing):
-    print("Replying to comment!")
-    already_done.append(thing.id)
-    print(generate_gibberish(40))
-    #thing.reply(generate_gibberish(40))
+    add_to_done_list(str(thing.id))
+    thing.reply(generate_gibberish(40))
+
+def add_to_done_list(idstring):
+    already_done.append(idstring)
+    with open("processedcomments.txt","a") as f:
+        f.write(idstring+"\n")
+    print("Writing file...")
 
 def build_dictionary(wordlist):
     for i, word in enumerate(wordlist):
@@ -87,6 +88,9 @@ def read_data():
     file = open("dictionary.txt","r")
     rawstring = file.read()
     file.close()
+    with open("processedcomments.txt","r") as proc:
+        for line in proc:
+            already_done.append(line[:len(line)-1])
     wordlist = rawstring.split()
     build_dictionary(wordlist)
 
@@ -94,9 +98,7 @@ def logic_loop():
     while True:
         print("Tick...")
         check_comments()
-        #gibberish = generate_gibberish(40)
-        #print(gibberish)
-        time.sleep(5)
+        time.sleep(605)
 
 def main():
     reddit_login()
