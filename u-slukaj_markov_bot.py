@@ -8,7 +8,7 @@
 # prompted to by /u/slukaj      #
 #################################   
 # USR: /u/slukaj_markovbot      #
-# PSW:                          #
+# PSW: 6UysNPWt                         #
 #################################
 
 import praw, time, sys
@@ -16,18 +16,37 @@ from collections import Counter
 from operator import itemgetter
 from random import choice
 
-def reddit_login():
-    user_agent = "Markov Chain Generator that monitors /u/slukaj | V0.1"
-    r = praw.Reddit(user_agent=user_agent)
+user_agent = "Markov Chain Generator that monitors /u/slukaj | V0.2"
+r = praw.Reddit(user_agent=user_agent)
+slukaj = r.get_redditor("slukaj")
 
+already_done = [] # list of all posts handled by /u/slukaj_markovbot
+
+def reddit_login():
     r.login(username="slukaj_markovbot",password="")
     print("Login sucessful")
 
-    already_done = [] # list of all posts handled by /u/slukaj_markovbot
+def check_comments():
+    comments = slukaj.get_comments(sort='new',time='all',limit=5)
+    for thing in comments:
+        if "/u/slukaj_markovbot" in str(thing.body):
+            print("Found a comment!")
+            if not already_replied(thing):
+                reply_to_comment(thing)
+    print("Checked comments...") 
 
-    user = "slukaj"
-    slukaj = r.get_redditor(user)
-    print("Got /u/slukaj")
+def already_replied(thing):
+    if thing.id in already_done:
+        print("Already done.")
+        return True
+    else:
+        print("Not yet done!")
+        return False
+
+def reply_to_comment(thing):
+    print("Replying to comment!")
+    already_done.append(thing.id)
+    thing.reply("I don't know!")
 
 def build_dictionary(wordlist):
     d = {}
@@ -61,6 +80,8 @@ def generate_gibberish(dictionary,length):
     return ' '.join(li)
 
 def main():
+    reddit_login()
+    check_comments()
     file = open("dictionary.txt","r")
     rawstring = file.read()
     file.close()
@@ -68,7 +89,7 @@ def main():
     dictionary = build_dictionary(wordlist)
     gibberish = generate_gibberish(dictionary,35)
     print(gibberish)
-
+        
 if __name__ == "__main__":
     main()
 
